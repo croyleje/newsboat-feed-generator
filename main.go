@@ -31,16 +31,7 @@ var urls = []string{
 
 // BUG: Look into how to generate this at compile time.
 // NOTE: Build date and all other date/times supplied in RFC822 format.
-// date "+%a, %d %b %Y %T %z"
-var buildDate = "Mon, 19 Feb 2024 18:45:21 -0500"
-
-// func generateBuildDate() string {
-// 	cmdout, err := exec.Command("date", "+%a, %d %b %Y %T %z").Output()
-// 	if err != nil {
-// 		return "Error parsing date."
-// 	}
-// 	return string(strings.TrimSuffix(string(cmdout), "\n"))
-// }
+var buildDate = time.Now().Format(time.RFC822)
 
 func parseURLS(urls []string, channelName string) *http.Response {
 	var rtn *http.Response
