@@ -12,8 +12,8 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-// BUG: The description tag is partially implemented but most no tech orientated feeds opt to use
-// content:encoded tag and the <![CDATA[ and ]]> wrappers to workaround the limitations of RSS feed
+// BUG: The description tag is partially implemented but most no tech orientened feeds opt to use
+// content:encoded tag and the <![CDATA[ and ]]> wrappers to workaround the limitatiopns of rss feed
 // format.
 
 type Feed struct {
@@ -24,13 +24,11 @@ type Feed struct {
 }
 
 var urls = []string{
-	"https://example.com/c/",
-	"https://example.com/user/",
-	"https://example.com",
+	"https://rumble.com/c/",
+	"https://rumble.com/user/",
 }
 
-// BUG: Look into how to generate this at compile time.
-// NOTE: Build date and all other date/times supplied in RFC822 format.
+// Build date and all other date/times supplied in RFC822 format.
 var buildDate = time.Now().Format(time.RFC822)
 
 func parseURLS(urls []string, channelName string) *http.Response {
@@ -50,8 +48,8 @@ func parseURLS(urls []string, channelName string) *http.Response {
 func scrapeHTML() {
 	// Request the HTML page.
 
-	// TODO: Add argument parsing to allow of multiple sites and filtering of the feed.
-	channelName := strings.Join(os.Args[1:], " ")
+	// TODO: Add arguemnt parsing to allow of multiple sites and filtering of the feed.
+	channelName := os.Args[len(os.Args)-1]
 	if channelName == "" {
 		panic("Please provide a channel name.")
 	}
@@ -59,7 +57,7 @@ func scrapeHTML() {
 	resp := parseURLS(urls, channelName)
 
 	// data, err := ioutil.ReadFile("index.html")
-	// For testing local copy of the pages HTML can be sourced to test your code.
+	// For testing local copy of the pages HTML can be sourcced to test your code.
 	// Without the need to make a request to the server.
 
 	defer resp.Body.Close()
@@ -91,26 +89,18 @@ func scrapeHTML() {
 			Title:       strings.TrimSpace(title),
 			Description: "[Duration: " + strings.TrimSpace(duration) + "]",
 			// BUG: RSS requires <pubDate> to be in RFC822 format.  Date supplied from the page is in RFC3339 format.
-			// TODO: Look into how cache works was able to get date and feed
-			// sort by date tags supplied by HTTP server ie.
-			// posted '1 day ago' ect. but this caused duplicate entries in the feed as date changed.  Possibly this
-			// could be resolved with more understanding of the newsboat cache.
-
-			// Date:        parseDate.Format(time.RFC822),
 			Date: parseDate.Format("Mon, 02 Jan 2006 15:04:05 -0700"),
 			// NOTE: Leave off trailing slash link is prefixed with slash during the scraping.
-			Link: "https://example.com" + link,
+			Link: "https://rumble.com" + link,
 		})
 
 	})
 
-	// Generate the RSS feed using text/template package.
-	// RSS template.
 	var rssTmpl = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
 <channel>
 	<title>` + channelName + ` RSS Feed</title>
-	<link>https://example.com/user/` + channelName + `</link>
+	<link>https://rumble.com/user/` + channelName + `</link>
 	<description>Golang goquery rss feed.</description>
 	<language>en-us</language>
 	<lastBuildDate>` + buildDate + `</lastBuildDate>
